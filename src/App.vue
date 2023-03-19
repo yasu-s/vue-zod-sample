@@ -8,6 +8,7 @@ const state = reactive({
     id: 1,
     name: 'Goto',
     memos: ['memo1', 'memo2'],
+    tasks: [{ id: 1, task: '' }],
   },
 })
 
@@ -40,6 +41,33 @@ function removeMemo() {
   memos.shift()
   state.account.memos = memos
 }
+
+/** issue追加 */
+function addIssue() {
+  const result = StateSchema.safeParse(state)
+  if (!result.success) {
+    result.error.addIssues([
+      {
+        code: 'custom',
+        path: ['account'],
+        message: 'account',
+      },
+      {
+        code: 'custom',
+        path: ['account', 'memos', 0],
+        message: 'memos',
+      },
+      {
+        code: 'custom',
+        path: ['account', 'tasks', '0', 'task'],
+        message: 'task',
+      },
+    ])
+    const error = result.error.format()
+    error.account?.memos?._errors
+    console.log(error)
+  }
+}
 </script>
 
 <template>
@@ -61,6 +89,7 @@ function removeMemo() {
       <button @click="validate()">validate</button>
       <button @click="addMemo()">addMemo</button>
       <button @click="removeMemo()">removeMemo</button>
+      <button @click="addIssue()">addIssue</button>
     </div>
   </div>
 </template>
