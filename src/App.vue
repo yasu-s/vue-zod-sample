@@ -11,6 +11,7 @@ const state = reactive({
   },
 })
 
+/** エラー状態 */
 const errorState = reactive<StateError>({
   _errors: [],
 })
@@ -18,14 +19,26 @@ const errorState = reactive<StateError>({
 /** バリデーション */
 function validate() {
   const result = StateSchema.safeParse(state)
+  console.log(result)
 
   if (result.success) {
     errorState._errors = []
   } else {
     const error = result.error.format()
     errorState.account = error.account
-    console.log(result.error)
   }
+}
+
+/** メモ追加 */
+function addMemo() {
+  state.account.memos = [...state.account.memos, 'aaaa']
+}
+
+/** メモ削除 */
+function removeMemo() {
+  const memos = [...state.account.memos]
+  memos.shift()
+  state.account.memos = memos
 }
 </script>
 
@@ -46,6 +59,8 @@ function validate() {
     </div>
     <div class="App__ButtonPanel">
       <button @click="validate()">validate</button>
+      <button @click="addMemo()">addMemo</button>
+      <button @click="removeMemo()">removeMemo</button>
     </div>
   </div>
 </template>

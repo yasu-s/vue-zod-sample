@@ -1,7 +1,7 @@
 import { z } from 'zod'
 
 /** zod定義 - Memo */
-export const MemoArraySchema = z.string().array().max(1)
+export const MemoArraySchema = z.string().array().max(2, 'メモの最大は2件です')
 
 /** zod定義 - Account */
 export const AccountSchema = z.object({
@@ -16,3 +16,6 @@ export const StateSchema = z.object({
 
 /** エラー定義 - State */
 export type StateError = z.inferFormattedError<typeof StateSchema>
+
+/** エラー定義 - Account */
+export type AccountError = z.inferFormattedError<typeof AccountSchema>
