@@ -14,6 +14,11 @@ export const TaskSchema = schemaForType<{ task: string; id: number }>(
 /** zod定義 - Task配列 */
 export const TasksSchema = TaskSchema.array()
 
+/** zod定義 - File */
+export const FileSchema = z.custom<File>((value) => {
+  return value instanceof File
+}, 'ファイルではありません')
+
 /** zod定義 - Memo配列 */
 export const MemosSchema = z.string().array().max(2, 'メモの最大は2件です')
 
@@ -29,7 +34,16 @@ export const AccountWithoutTaskSchema = AccountSchema.omit({ tasks: true })
 
 /** zod定義 - State */
 export const StateSchema = z.object({
-  account: AccountSchema,
+  account: AccountSchema.superRefine((value, ctx) => {
+    if (value.memos.length > 0 && value.name.length !== 1) {
+      ctx.addIssue({ code: 'custom', message: 'superRefineチェック', path: ['name'] })
+    }
+  }).refine(
+    (value) => {
+      return value.memos.length > 0 && value.name.length === 2
+    },
+    { message: 'refineチェック', path: ['memos'] },
+  ),
 })
 
 /** エラー定義 - State */
