@@ -57,3 +57,17 @@ type CustomState = { id: number; memos: string[] }
 
 /** Stateからエラー定義 */
 export type CustomStateError = z.inferFormattedError<z.ZodType<CustomState>>
+
+export function removeAt<T>(target: Record<number, T> & { _errors: string[] }, index: number) {
+  const { _errors, ...items } = target
+
+  const record: typeof target = { _errors }
+
+  Object.keys(items)
+    .map((k) => Number(k))
+    .filter((k) => k !== index)
+    .sort()
+    .forEach((k, index) => (record[index] = items[k]))
+
+  return record
+}

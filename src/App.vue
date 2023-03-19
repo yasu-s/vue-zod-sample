@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { reactive } from 'vue'
-import { StateSchema, StateError } from './validation'
+import { reactive, watch } from 'vue'
+import { StateSchema, StateError, removeAt } from './validation'
 
 /** 入力Form */
 const state = reactive({
@@ -16,6 +16,40 @@ const state = reactive({
 const errorState = reactive<StateError>({
   _errors: [],
 })
+
+watch(
+  () => state.account.memos,
+  (value, oldValue) => {
+    const targetIndex = 0
+    if (value.length < oldValue.length) {
+      const errorAccount = errorState.account
+      if (!errorAccount) return
+      const memos = errorAccount.memos
+      if (!memos) return
+
+      // const tasks = errorAccount.tasks
+      // if (!tasks) return
+      // const b = removeAt(tasks, 0)
+
+      const a = removeAt(memos, targetIndex)
+      errorAccount.memos = a
+      console.log(a)
+
+      // const { _errors, ...items } = memos
+
+      // const keys = Object.keys(items)
+      //   .map((k) => Number(k))
+      //   .filter((k) => k !== targetIndex)
+      //   .sort()
+
+      // const record: typeof memos = { _errors }
+      // keys.forEach((k, index) => (record[index] = items[k]))
+      // errorAccount.memos = record
+      // console.log({ keys, record, a })
+    }
+    console.log({ value, oldValue, error: errorState.account })
+  },
+)
 
 /** バリデーション */
 function validate() {
@@ -59,12 +93,17 @@ function addIssue() {
       },
       {
         code: 'custom',
+        path: ['account', 'memos', 1],
+        message: 'memos',
+      },
+      {
+        code: 'custom',
         path: ['account', 'tasks', '0', 'task'],
         message: 'task',
       },
     ])
     const error = result.error.format()
-    error.account?.memos?._errors
+    errorState.account = error.account
     console.log(error)
   }
 }
