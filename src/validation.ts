@@ -1,9 +1,15 @@
 import { z } from 'zod'
 
+function schemaForType<Type, Schema = z.ZodType<Partial<Type>>>(schema: Schema) {
+  return schema
+}
+
 /** zod定義 - Task */
-export const TaskSchema = z.object({
-  task: z.string().min(1, '文字を入力してください'),
-})
+export const TaskSchema = schemaForType<{ task: string; id: number }>(
+  z.object({
+    task: z.string().min(1, '文字を入力してください'),
+  }),
+)
 
 /** zod定義 - Task配列 */
 export const TasksSchema = TaskSchema.array()
