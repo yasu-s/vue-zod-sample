@@ -18,6 +18,9 @@ export const AccountSchema = z.object({
   tasks: TasksSchema,
 })
 
+/** zod定義 - Account tasks除外 */
+export const AccountWithoutTaskSchema = AccountSchema.omit({ tasks: true })
+
 /** zod定義 - State */
 export const StateSchema = z.object({
   account: AccountSchema,
@@ -28,3 +31,9 @@ export type StateError = z.inferFormattedError<typeof StateSchema>
 
 /** エラー定義 - Account */
 export type AccountError = z.inferFormattedError<typeof AccountSchema>
+
+/** State仮定義 */
+type CustomState = { id: number; memos: string[] }
+
+/** Stateからエラー定義 */
+export type CustomStateError = z.inferFormattedError<z.ZodType<CustomState>>
