@@ -18,34 +18,33 @@ const errorState = reactive<StateError>({
 })
 
 watch(
+  () => state.account.tasks,
+  (value, oldValue) => {
+    if (value.length < oldValue.length) {
+      const b = Object.entries(oldValue)
+        .filter((o) => !value.find((v) => v === o[1]))
+        .map((o) => Number(o[0]))
+      console.log({ value, oldValue, b })
+    }
+  },
+)
+
+watch(
   () => state.account.memos,
   (value, oldValue) => {
     const targetIndex = 0
     if (value.length < oldValue.length) {
+      const b = oldValue.filter((o) => !value.find((v) => v === o))
+      console.log({ value, oldValue, b })
+
       const errorAccount = errorState.account
       if (!errorAccount) return
       const memos = errorAccount.memos
       if (!memos) return
 
-      // const tasks = errorAccount.tasks
-      // if (!tasks) return
-      // const b = removeAt(tasks, 0)
-
       const a = removeAt(memos, targetIndex)
       errorAccount.memos = a
       console.log(a)
-
-      // const { _errors, ...items } = memos
-
-      // const keys = Object.keys(items)
-      //   .map((k) => Number(k))
-      //   .filter((k) => k !== targetIndex)
-      //   .sort()
-
-      // const record: typeof memos = { _errors }
-      // keys.forEach((k, index) => (record[index] = items[k]))
-      // errorAccount.memos = record
-      // console.log({ keys, record, a })
     }
     console.log({ value, oldValue, error: errorState.account })
   },
@@ -76,6 +75,17 @@ function removeMemo() {
   state.account.memos = memos
 }
 
+/** タスク追加 */
+function addTask() {
+  state.account.tasks = [...state.account.tasks, { id: 2, task: 'aaa' }]
+}
+
+/** タスク削除 */
+function removeTask() {
+  const tasks = [...state.account.tasks]
+  tasks.shift()
+  state.account.tasks = tasks
+}
 /** issue追加 */
 function addIssue() {
   const result = StateSchema.safeParse(state)
@@ -128,6 +138,8 @@ function addIssue() {
       <button @click="validate()">validate</button>
       <button @click="addMemo()">addMemo</button>
       <button @click="removeMemo()">removeMemo</button>
+      <button @click="addTask()">addTask</button>
+      <button @click="removeTask()">removeTask</button>
       <button @click="addIssue()">addIssue</button>
     </div>
   </div>
